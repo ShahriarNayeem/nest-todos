@@ -1,46 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TodosService } from './todos.service';
 import { Todo, TodoSchema } from './entities/todo.entity';
-import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Connection, connect, Model } from 'mongoose';
+import { MongooseModule } from '@nestjs/mongoose';
+import {
+  rootMongooseTestModule,
+  closeInMongodConnection,
+} from '../helpers/mongoose.helper';
 
 describe('TodosService', () => {
   let service: TodosService;
-  let mongod: MongoMemoryServer;
-  let mongoConnection: Connection;
-  let todoModel: Model<Todo>;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    mongod = await MongoMemoryServer.create();
-    const uri = mongod.getUri();
-    mongoConnection = (await connect(uri)).connection;
-    todoModel = mongoConnection.model(Todo.name, TodoSchema);
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        TodosService,
-        {
-          provide: getConnectionToken('DatabaseConnection'),
-          useValue: mongoConnection,
-        },
-        { provide: getModelToken(Todo.name), useValue: todoModel },
+    module = await Test.createTestingModule({
+      imports: [
+        rootMongooseTestModule(),
+        MongooseModule.forFeature([
+          {
+            name: Todo.name,
+            schema: TodoSchema,
+          },
+        ]),
       ],
+      providers: [TodosService],
     }).compile();
 
     service = module.get<TodosService>(TodosService);
   });
 
   afterAll(async () => {
-    await mongoConnection.dropDatabase();
-    await mongoConnection.close();
-    await mongod.stop();
-  });
-
-  afterEach(async () => {
-    const collections = mongoConnection.collections;
-    for (const key in collections) {
-      const collection = collections[key];
-      await collection.deleteMany({});
+    if (module) {
+      await module.close();
+      await closeInMongodConnection();
     }
   });
 
