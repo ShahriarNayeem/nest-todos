@@ -9,6 +9,19 @@ orbs:
   node: circleci/node@4.7
   slack: circleci/slack@4.10.1
 
+commands:
+  notify:
+    docker:
+      - image: 'cimg/base:stable'
+    steps:
+      - run: echo "sent to slack"
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: basic_success_1
+
 jobs:
   # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
   build-and-test:
@@ -30,18 +43,7 @@ jobs:
       - run:
           name: Run tests
           command: yarn test
-
-  notify:
-    docker:
-      - image: 'cimg/base:stable'
-    steps:
-      - run: echo "sent to slack"
-      - slack/notify:
-         event: fail
-         template: basic_fail_1
-      - slack/notify:
-         event: pass
-         template: basic_success_1
+      - notify
 
 workflows:
   # Below is the definition of your workflow.
@@ -52,8 +54,5 @@ workflows:
     jobs:
       # For running simple node tests, you could optionally use the node/test job from the orb to replicate and replace the job above in fewer lines.
       # - node/test
-      - build-and-test
-      - notify:
+      - build-and-test:
           context: 'SLACK'
-          requires:
-            - build-and-test
