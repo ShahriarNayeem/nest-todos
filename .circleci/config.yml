@@ -11,8 +11,6 @@ orbs:
 
 commands:
   notify:
-    docker:
-      - image: 'cimg/base:stable'
     steps:
       - run: echo "sent to slack"
       - slack/notify:
