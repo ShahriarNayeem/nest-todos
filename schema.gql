@@ -1,0 +1,66 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateTodoInput {
+  """Todo description"""
+  description: String!
+
+  """Todo title"""
+  title: String!
+}
+
+type Mutation {
+  """Create a new todo"""
+  create_a_todo(createTodoInput: CreateTodoInput!): Todo!
+
+  """Delete a todo"""
+  delete_a_todo(id: ID!): Todo
+
+  """Update a todo"""
+  update_a_todo(updateTodoInput: UpdateTodoInput!): Todo!
+}
+
+type Query {
+  """Get a single todo"""
+  get_a_single_todo(id: ID!): Todo
+
+  """Get all todos"""
+  get_all_todos(pageNumber: Int!): [Todo!]!
+}
+
+"""
+`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
+"""
+scalar Timestamp
+
+"""Todo entity"""
+type Todo {
+  """Todo Id"""
+  _id: ID!
+
+  """Todo created date"""
+  createdAt: Timestamp!
+
+  """Todo description"""
+  description: String!
+
+  """Todo finished date"""
+  finishedAt: Timestamp
+
+  """Todo status"""
+  isFinished: Boolean!
+
+  """Todo title"""
+  title: String!
+}
+
+input UpdateTodoInput {
+  """Todo description"""
+  description: String
+  id: ID!
+  isFinished: Boolean!
+
+  """Todo title"""
+  title: String
+}
