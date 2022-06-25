@@ -20,6 +20,6 @@ describe('TodosResolver', () => {
   });
 
   it('should be defined', () => {
-    expect(resolver).toBeUndefined();
+    expect(resolver).toBeDefined();
   });
 });

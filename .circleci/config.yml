@@ -54,3 +54,6 @@ workflows:
       # - node/test
       - build-and-test:
           context: 'SLACK'
+          filters:
+            branches:
+              only: main
